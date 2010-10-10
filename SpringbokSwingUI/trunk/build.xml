@@ -1,0 +1,49 @@
+<project name="SpringbokSwingUI" default="portable_build">
+	
+	<property name="build.folder" value="${basedir}${file.separator}build"/>	
+	<property name="target.folder" value="${build.folder}${file.separator}target"/>
+	<property name="resources.folder" value="${basedir}${file.separator}resources"/>
+	<property name="portable.folder" value="${target.folder}${file.separator}Portable_SpringbokSwingUI"/>
+	<property name="jre6archive" value="${resources.folder}${file.separator}jre6${file.separator}jre6.zip"/>
+	<property name="portable.libs" value="${resources.folder}${file.separator}libs"/>
+	<property name="portable.scripts" value="${resources.folder}${file.separator}scripts"/>
+	<property name="bin.folder" value="${basedir}${file.separator}bin"/>
+	<property name="version" value="1.0"/>
+	
+	<target name="release_build" depends="prepare">
+		<jar destfile="${target.folder}${file.separator}SpringbokUI_${version}.jar" >
+			<fileset dir="${bin.folder}"
+	 	             includes="**/*.class"
+	 	    />
+			<manifest>
+				<attribute name="Main-Class"
+ 	            value="ui.SpringbokUI"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="portable_build" depends="prepare">
+		<delete dir="$portable.folder"/>
+		<unzip dest="${portable.folder}${file.separator}jre6" src="${jre6archive}"></unzip>
+		<copydir  dest="${portable.folder}${file.separator}libs" src="${portable.libs}"></copydir>
+		<copy todir="${portable.folder}" file="${portable.scripts}${file.separator}addtoclasspath.bat"/>
+		<copy todir="${portable.folder}" file="${portable.scripts}${file.separator}rungui.bat"/>
+		<copy todir="${portable.folder}" file="${portable.scripts}${file.separator}swing.properties"/>
+		
+		<jar destfile="${portable.folder}${file.separator}libs${file.separator}SpringbokUI_${version}.jar">
+			<fileset dir="${bin.folder}"
+	 	             includes="**/*.class"
+	 	    />
+			<manifest>
+				<attribute name="Main-Class"
+ 	            value="ui.SpringbokUI"/>
+			</manifest>
+		</jar>
+		
+	</target>
+	
+	<target name="prepare">
+		<mkdir dir="${target.folder}"/>
+	</target>
+	
+</project>

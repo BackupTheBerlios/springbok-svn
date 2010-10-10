@@ -1,0 +1,17 @@
+<project name="SpringbokCore" default="jar">
+	
+	<property name="build.folder" value="${basedir}${file.separator}build"/>
+	<property name="target.folder" value="${build.folder}${file.separator}target"/>
+	<property name="bin.folder" value="${basedir}${file.separator}bin"/>
+	
+	<target name="jar" depends="prepare">
+		<jar destfile="${target.folder}${file.separator}SpringbokCore.jar" >
+			<fileset dir="${bin.folder}" includes="**/*.class"/>			
+		</jar>
+	</target>
+	
+	<target name="prepare">
+		<mkdir dir="${target.folder}"/>
+	</target>
+	
+</project>

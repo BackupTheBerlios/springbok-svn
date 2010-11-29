@@ -7,8 +7,11 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.URL;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -20,19 +23,17 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
-
-import views.NewAlias;
-import views.OperatorsToolBar;
-import views.ResultPanel;
 
 import model.DataModel;
 import model.Result;
 import model.UIMode;
 import model.UIModel;
+import views.ClosableTabbedPane;
+import views.NewAlias;
+import views.OperatorsToolBar;
+import views.ResultPanel;
 import controllers.DAOController;
 import event.IModelUpdateListener;
 import exception.CoreException;
@@ -51,7 +52,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 	private JCheckBoxMenuItem menuItemOperatorTools;
 
 	private JEditorPane editorPane = null;
-	private JTabbedPane tabbedPane = null;
+	private ClosableTabbedPane tabbedPane = null;
 	private JSplitPane outputSplitPane = null;
 
 	private JTextPane textPane = null;
@@ -122,7 +123,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 		outputSplitPane.setOneTouchExpandable(true);
 		outputSplitPane.setDividerLocation(450);
 
-		tabbedPane = new JTabbedPane();
+		tabbedPane = new ClosableTabbedPane();
 		outputSplitPane.setTopComponent(tabbedPane);
 
 		textPane = new JTextPane();
@@ -346,7 +347,11 @@ public class SpringbokUI extends JFrame implements ActionListener {
 
 	private void updateTabbedPane(DataModel dataModel) {
 		// tabbedPane.removeAll();
-		if (dataModel != null) {
+		if (dataModel != null) {						
+			String closeImgLocation = "images" + File.separator + "TabCloseIcon.png";
+//			URL imageURL = OperatorsToolBar.class.getClassLoader().getResource(
+//					closeImgLocation);
+//			ImageIcon icon = new ImageIcon(imageURL);			
 			ResultPanel resultPanel = new ResultPanel(dataModel);
 			tabbedPane.addTab(dataModel.getName(), resultPanel);			
 			tabbedPane.setSelectedComponent(resultPanel);			

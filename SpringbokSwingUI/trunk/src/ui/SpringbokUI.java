@@ -381,11 +381,38 @@ public class SpringbokUI extends JFrame implements ActionListener {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if ("Select".equals(e.getActionCommand())) {
-						System.out.println("Pressed Select");
+						System.out.println("Pressed Select");						
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append('\u03C3');
+						} else {
+							buffer.insert(i, '\u03C3');
+						}
+						editorPane.setText(buffer.toString());						
 					} else if ("Project".equals(e.getActionCommand())) {
 						System.out.println("Pressed Pelect");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append('\u03C0');
+						} else {
+							buffer.insert(i, '\u03C0');
+						}
+						editorPane.setText(buffer.toString());						
 					} else if ("Assign".equals(e.getActionCommand())) {
 						System.out.println("Pressed Assign");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append('\u2190');
+						} else {
+							buffer.insert(i, '\u2190');
+						}
+						editorPane.setText(buffer.toString());
 					} else if ("Validate".equals(e.getActionCommand())) {
 						System.out.println("Pressed Validate");
 					} else if ("Execute".equals(e.getActionCommand())) {

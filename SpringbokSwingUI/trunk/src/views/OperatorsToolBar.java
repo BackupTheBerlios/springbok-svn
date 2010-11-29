@@ -3,6 +3,7 @@ package views;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.net.URL;
 
 import javax.swing.Box;
@@ -11,8 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-
-import event.IModelUpdateListener;
 
 public class OperatorsToolBar extends JToolBar implements ActionListener {
 
@@ -58,7 +57,7 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 	protected JButton makeToolBarButton(String imageName, String actionCommand,
 			String toolTipText, String altText, JPanel panel) {
 		// Look for the image.
-		String imgLocation = "images/" + imageName + ".png";
+		String imgLocation = "images" + File.separator + imageName + ".png";
 		URL imageURL = OperatorsToolBar.class.getClassLoader().getResource(
 				imgLocation);
 

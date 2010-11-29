@@ -2,16 +2,15 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.URL;
 
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -50,6 +49,8 @@ public class SpringbokUI extends JFrame implements ActionListener {
 	private JRadioButtonMenuItem menuItemAlgebraMode;
 	private JRadioButtonMenuItem menuItemSqlMode;
 	private JCheckBoxMenuItem menuItemOperatorTools;
+	private JMenuItem menuItemZoomIn;
+	private JMenuItem menuItemZoomOut;
 
 	private JEditorPane editorPane = null;
 	private ClosableTabbedPane tabbedPane = null;
@@ -210,6 +211,24 @@ public class SpringbokUI extends JFrame implements ActionListener {
 		menuItemOperatorTools.addActionListener(this);
 		menuView.add(menuItemOperatorTools);
 
+		// zoom in
+		menuItemZoomIn = new JMenuItem("Zoom In");
+		menuItemZoomIn.setMnemonic(KeyEvent.VK_ADD);
+		menuItemZoomIn.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_ADD, ActionEvent.CTRL_MASK));
+		menuItemZoomIn.setActionCommand("zoomIn");
+		menuItemZoomIn.addActionListener(this);
+		menuView.add(menuItemZoomIn);
+		
+		// zoom out
+		menuItemZoomOut = new JMenuItem("Zoom Out");
+		menuItemZoomOut.setMnemonic(KeyEvent.VK_SUBTRACT);
+		menuItemZoomOut.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_SUBTRACT, ActionEvent.CTRL_MASK));
+		menuItemZoomOut.setActionCommand("zoomOut");
+		menuItemZoomOut.addActionListener(this);
+		menuView.add(menuItemZoomOut);
+		
 		return menuBar;
 	}
 
@@ -283,6 +302,14 @@ public class SpringbokUI extends JFrame implements ActionListener {
 			uiModel.setUiMode(UIMode.ALGEBRA);
 		} else if ("sql".equals(e.getActionCommand())) {
 			uiModel.setUiMode(UIMode.SQL);
+		} else if ("zoomIn".equals(e.getActionCommand())) {
+			Font oldFont = editorPane.getFont();
+			Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize()+1);
+			editorPane.setFont(newFont);
+		} else if ("zoomOut".equals(e.getActionCommand())) {
+			Font oldFont = editorPane.getFont();
+			Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize()-1);
+			editorPane.setFont(newFont);
 		}
 	}
 

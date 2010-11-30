@@ -57,7 +57,7 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 	protected JButton makeToolBarButton(String imageName, String actionCommand,
 			String toolTipText, String altText, JPanel panel) {
 		// Look for the image.
-		String imgLocation = "images" + File.separator + imageName + ".png";
+		String imgLocation = "images" + '/' + imageName + ".png";
 		URL imageURL = OperatorsToolBar.class.getClassLoader().getResource(
 				imgLocation);
 

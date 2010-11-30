@@ -33,6 +33,7 @@ import views.ClosableTabbedPane;
 import views.NewAlias;
 import views.OperatorsToolBar;
 import views.ResultPanel;
+import controllers.AlgebraToSqlTranslator;
 import controllers.DAOController;
 import event.IModelUpdateListener;
 import exception.CoreException;
@@ -443,42 +444,101 @@ public class SpringbokUI extends JFrame implements ActionListener {
 					} else if ("Validate".equals(e.getActionCommand())) {
 						System.out.println("Pressed Validate");
 					} else if ("Execute".equals(e.getActionCommand())) {
-						String text = editorPane.getSelectedText();
-						System.out.println(text);
-						// block for empty strings
-						if (text == null || text.length() == 0)
-							return;
+						if (uiModel.getUiMode() == UIMode.SQL) {
+							String text = editorPane.getSelectedText();
+							System.out.println(text);
+							// block for empty strings
+							if (text == null || text.length() == 0)
+								return;
 
-						try {
-							// if multiple queries are there by separating ";"
-							// then take one by one
-							String[] queries = text.split(";");
-							for (String query : queries) {
-								
-								if(query != null)
-									query = query.trim();	
-								
-								if (query == null || query.length() == 0)
-									continue;
-								
-								long t1 = System.currentTimeMillis();
-								Result result = controller
-										.runStatement(query);
-								long t2 = System.currentTimeMillis();
-								textPane
-										.setText("Query executed successfully, took "
-												+ (t2 - t1)
-												/ 1000.0
-												+ " seconds");
-								if (result != null
-										&& result.getDataModel() != null) {
-									updateTabbedPane(result.getDataModel());
+							try {
+								// if multiple queries are there by separating
+								// ";"
+								// then take one by one
+								String[] queries = text.split(";");
+								for (String query : queries) {
+
+									if (query != null)
+										query = query.trim();
+
+									if (query == null || query.length() == 0)
+										continue;
+
+									long t1 = System.currentTimeMillis();
+									Result result = controller
+											.runStatement(query);
+									long t2 = System.currentTimeMillis();
+									textPane
+											.setText("Query executed successfully, took "
+													+ (t2 - t1)
+													/ 1000.0
+													+ " seconds");
+									if (result != null
+											&& result.getDataModel() != null) {
+										updateTabbedPane(result.getDataModel());
+									}
 								}
-							}						
-						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-							textPane.setText(e1.getLocalizedMessage());
+							} catch (CoreException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+								textPane.setText(e1.getLocalizedMessage());
+							}
+						} else if(uiModel.getUiMode() == UIMode.ALGEBRA) {
+							AlgebraToSqlTranslator translator = new AlgebraToSqlTranslator();
+							String text = editorPane.getSelectedText();
+							System.out.println(text);
+							// block for empty strings
+							if (text == null || text.length() == 0)
+								return;
+							
+							try {
+								// if multiple queries are there by separating
+								// ";"
+								// then take one by one
+								String[] queries = text.split(";");
+								for (String query : queries) {
+
+									if (query != null)
+										query = query.trim();
+
+									if (query == null || query.length() == 0)
+										continue;
+
+									// look for <- to get table name 
+									int index = query.indexOf("\u2190");
+									String tableName = null;
+									if(index != -1) {
+										tableName = query.substring(0, index);
+										query = query.substring(index + 1);
+									}
+									
+									
+									String output = translator.translate(query);
+									System.out.println(output);
+									
+									long t1 = System.currentTimeMillis();
+									Result result = controller
+											.runStatement(output);
+									long t2 = System.currentTimeMillis();
+									textPane
+											.setText("Query executed successfully, took "
+													+ (t2 - t1)
+													/ 1000.0
+													+ " seconds");
+									if (result != null
+											&& result.getDataModel() != null) {
+										DataModel dataModel = result.getDataModel();
+										if(tableName != null && tableName.trim().length() != 0)
+											dataModel.setName(tableName);
+										
+										updateTabbedPane(dataModel);
+									}
+								}
+							} catch (CoreException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+								textPane.setText(e1.getLocalizedMessage());
+							}							
 						}
 					}
 

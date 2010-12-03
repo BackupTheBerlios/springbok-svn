@@ -6,7 +6,7 @@
 	
 	<target name="jar" depends="prepare">
 		<jar destfile="${target.folder}${file.separator}SpringbokCore.jar" >
-			<fileset dir="${bin.folder}" includes="**/*.class"/>			
+			<fileset dir="${bin.folder}" includes="**/*.class" excludes="**/*Test.class"/>			
 		</jar>
 	</target>
 	

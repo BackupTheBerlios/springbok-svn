@@ -29,11 +29,13 @@ import model.DataModel;
 import model.Result;
 import model.UIMode;
 import model.UIModel;
+import utils.AlgebraConstants;
 import views.ClosableTabbedPane;
 import views.NewAlias;
 import views.OperatorsToolBar;
 import views.ResultPanel;
 import controllers.AlgebraToSqlTranslator;
+import controllers.AlgebraValidator;
 import controllers.DAOController;
 import event.IModelUpdateListener;
 import exception.CoreException;
@@ -381,7 +383,8 @@ public class SpringbokUI extends JFrame implements ActionListener {
 //					closeImgLocation);
 //			ImageIcon icon = new ImageIcon(imageURL);			
 			ResultPanel resultPanel = new ResultPanel(dataModel);
-			tabbedPane.addTab(dataModel.getName(), resultPanel);			
+			resultPanel.setToolTipText(dataModel.getQuery());
+			tabbedPane.addTab(dataModel.getName(),resultPanel);			
 			tabbedPane.setSelectedComponent(resultPanel);			
 		}
 	}
@@ -414,9 +417,9 @@ public class SpringbokUI extends JFrame implements ActionListener {
 								.getText());
 						int i = editorPane.getCaretPosition();
 						if (i == buffer.length()) {
-							buffer.append('\u03C3');
+							buffer.append(AlgebraConstants.SELECT);
 						} else {
-							buffer.insert(i, '\u03C3');
+							buffer.insert(i, AlgebraConstants.SELECT);
 						}
 						editorPane.setText(buffer.toString());						
 					} else if ("Project".equals(e.getActionCommand())) {
@@ -425,9 +428,9 @@ public class SpringbokUI extends JFrame implements ActionListener {
 								.getText());
 						int i = editorPane.getCaretPosition();
 						if (i == buffer.length()) {
-							buffer.append('\u03C0');
+							buffer.append(AlgebraConstants.PROJECT);
 						} else {
-							buffer.insert(i, '\u03C0');
+							buffer.insert(i, AlgebraConstants.PROJECT);
 						}
 						editorPane.setText(buffer.toString());						
 					} else if ("Assign".equals(e.getActionCommand())) {
@@ -436,13 +439,24 @@ public class SpringbokUI extends JFrame implements ActionListener {
 								.getText());
 						int i = editorPane.getCaretPosition();
 						if (i == buffer.length()) {
-							buffer.append('\u2190');
+							buffer.append(AlgebraConstants.ASSIGN);
 						} else {
-							buffer.insert(i, '\u2190');
+							buffer.insert(i, AlgebraConstants.ASSIGN);
 						}
 						editorPane.setText(buffer.toString());
-					} else if ("Validate".equals(e.getActionCommand())) {
-						System.out.println("Pressed Validate");
+					} else if ("Validate".equals(e.getActionCommand())) {						
+						String text = editorPane.getSelectedText();
+						System.out.println(text);
+						// block for empty strings
+						if (text == null || text.length() == 0)
+							return;
+						
+						String result = AlgebraValidator.validate(text);
+						if(result != null)
+							textPane.setText(result);
+						else
+							textPane.setText("No errors found");
+						
 					} else if ("Execute".equals(e.getActionCommand())) {
 						if (uiModel.getUiMode() == UIMode.SQL) {
 							handleSql();
@@ -482,13 +496,19 @@ public class SpringbokUI extends JFrame implements ActionListener {
 			// then take one by one
 			String[] queries = text.split(";");
 			for (String query : queries) {
-
+								
 				if (query != null)
 					query = query.trim();
 
 				if (query == null || query.length() == 0)
 					continue;
 
+				String validationResult = AlgebraValidator.validate(query);
+				if(validationResult != null) {
+					textPane.setText(validationResult);
+					return;
+				}
+				
 				// look for <- to get table name 
 				int index = query.indexOf("\u2190");
 				String tableName = null;
@@ -513,6 +533,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 				if (result != null
 						&& result.getDataModel() != null) {
 					DataModel dataModel = result.getDataModel();
+					dataModel.setQuery(query);
 					if(tableName != null && tableName.trim().length() != 0)
 						dataModel.setName(tableName);
 					
@@ -560,6 +581,8 @@ public class SpringbokUI extends JFrame implements ActionListener {
 								+ " seconds");
 				if (result != null
 						&& result.getDataModel() != null) {
+					DataModel dataModel = result.getDataModel();
+					dataModel.setQuery(query);
 					updateTabbedPane(result.getDataModel());
 				}
 			}

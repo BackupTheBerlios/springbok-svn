@@ -6,15 +6,48 @@ import utils.StringUtils;
 public class AlgebraToSqlTranslator {
 
 	public String translate(String algebra) {		
-		String message = null;
+		String statement = null;
 		
 		if(StringUtils.isNotEmpty(algebra)) {
 			algebra = StringUtils.normalize(algebra);
 			char ch = algebra.charAt(0);
 			if(ch == AlgebraConstants.SELECT)
-				message = translateSelectStatement(algebra);
+				statement = translateSelectStatement(algebra);
+			else if(ch == AlgebraConstants.PROJECT)
+				statement = translateProjectStatement(algebra);
 		}		
-		return message;		
+		return statement;		
+	}
+
+	private String translateProjectStatement(String algebra) {
+		int indexOfOpenBrace = algebra.indexOf('(');		
+		int indexOfCloseBrace = algebra.indexOf(')');
+		
+		String tableName = algebra.substring(indexOfOpenBrace+1, indexOfCloseBrace);
+		tableName = StringUtils.normalize(tableName);
+				
+		/*
+		 * translate projectClause (tableName);
+		 */
+		String projectClause = algebra.substring(1, indexOfOpenBrace);
+		projectClause = StringUtils.normalize(projectClause);
+		
+		char ch = tableName.charAt(0);
+		if(ch == AlgebraConstants.SELECT) {
+			// assume tableName => select (tableName)
+			String statement = translateSelectStatement(tableName);
+			if(StringUtils.isNotEmpty(projectClause))
+				return statement.replaceFirst("\\*", projectClause);
+		} else {
+			// assume as a table
+			String statement = "select * from " + tableName;
+			if(StringUtils.isNotEmpty(projectClause))
+				return statement.replaceFirst("\\*", projectClause);
+			return statement;
+			//TODO: if a assigned variable
+		}
+		
+		return null;
 	}
 
 	private String translateSelectStatement(String algebra) {

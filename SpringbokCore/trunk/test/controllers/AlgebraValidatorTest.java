@@ -10,6 +10,6 @@ public class AlgebraValidatorTest extends TestCase {
 		String algebra = AlgebraConstants.SELECT + " id=5 table1";
 		String message = AlgebraValidator.validate(algebra);
 		System.out.println(message);
-		assertEquals(MessageBundle.getMessage(MessageBundle.MISSING_TABLE_NAME), message);
+		assertEquals(MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME), message);
 	}
 }

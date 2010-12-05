@@ -37,6 +37,9 @@
 			<fileset dir="${bin.folder}"
 	 	             includes="**/*.class"
 	 	    />
+			<fileset dir="${bin.folder}"
+				 	             includes="**/*.png"
+			/>
 			<manifest>
 				<attribute name="Main-Class"
  	            value="ui.SpringbokUI"/>

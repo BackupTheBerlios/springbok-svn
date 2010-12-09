@@ -125,7 +125,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 
 		outputSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		outputSplitPane.setOneTouchExpandable(true);
-		outputSplitPane.setDividerLocation(450);
+		outputSplitPane.setDividerLocation(350);
 
 		tabbedPane = new ClosableTabbedPane();
 		outputSplitPane.setTopComponent(tabbedPane);

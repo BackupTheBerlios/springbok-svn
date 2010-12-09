@@ -131,6 +131,10 @@ public class SpringbokUI extends JFrame implements ActionListener {
 		outputSplitPane.setTopComponent(tabbedPane);
 
 		textPane = new JTextPane();
+		Font oldFont = textPane.getFont();
+		Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), 12);
+		textPane.setFont(newFont);
+		
 		JScrollPane outputscrollPane = new JScrollPane(textPane);
 		Dimension outputMinimumSize = new Dimension(screenSize.width - inset
 				* 2, 50);
@@ -323,7 +327,9 @@ public class SpringbokUI extends JFrame implements ActionListener {
 
 		// disable tool bar buttons
 		toolBarOperators
-				.setVisibilityOfDefaultPanel(uiModel.getAlias() != null);
+				.setVisibilityOfSqlPanel(uiModel.getAlias() != null);
+		toolBarOperators
+		.setVisibilityOfDefaultPanel(uiModel.getAlias() != null);
 
 		if (uiModel.getAlias() != null) {
 			try {
@@ -423,7 +429,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 						}
 						editorPane.setText(buffer.toString());						
 					} else if ("Project".equals(e.getActionCommand())) {
-						System.out.println("Pressed Pelect");
+						System.out.println("Pressed Project");
 						StringBuffer buffer = new StringBuffer(editorPane
 								.getText());
 						int i = editorPane.getCaretPosition();
@@ -462,6 +468,51 @@ public class SpringbokUI extends JFrame implements ActionListener {
 							handleSql();
 						} else if(uiModel.getUiMode() == UIMode.ALGEBRA) {
 							handleAlgebra();							
+						}
+					} else if ("Convert".equals(e.getActionCommand())) {
+						if (uiModel.getUiMode() == UIMode.SQL) {
+							//handleSql();
+						} else if(uiModel.getUiMode() == UIMode.ALGEBRA) {
+							AlgebraToSqlTranslator translator = new AlgebraToSqlTranslator();
+							String text = editorPane.getSelectedText();
+							System.out.println(text);
+							// block for empty strings
+							if (text == null || text.length() == 0)
+								return;
+														
+							// if multiple queries are there by separating
+							// ";"
+							// then take one by one
+							String[] queries = text.split(";");
+							StringBuffer stringBuffer = new StringBuffer();
+							for (String query : queries) {
+												
+								if (query != null)
+									query = query.trim();
+
+								if (query == null || query.length() == 0)
+									continue;
+
+								String validationResult = AlgebraValidator.validate(query);
+								if(validationResult != null) {
+									textPane.setText(validationResult);
+									return;
+								}
+								
+								// look for <- to get table name 
+								int index = query.indexOf("\u2190");
+								String tableName = null;
+								if(index != -1) {
+									tableName = query.substring(0, index);
+									query = query.substring(index + 1);
+								}
+																	
+								String output = translator.translate(query);
+								stringBuffer.append(output);
+								stringBuffer.append("\n");						
+							}
+							 
+							textPane.setText(stringBuffer.toString());
 						}
 					}
 				}

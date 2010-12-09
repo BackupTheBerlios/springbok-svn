@@ -3,7 +3,6 @@ package views;
 import java.awt.ComponentOrientation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.net.URL;
 
 import javax.swing.Box;
@@ -17,6 +16,7 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel algebraPanel = null;
+	private JPanel sqlPanel = null;
 	private JPanel defaultPanel = null;
 	private ActionListener actionListener = null;
 
@@ -35,6 +35,13 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 		defaultPanel
 				.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		add(defaultPanel);
+		
+		sqlPanel = new JPanel();
+		sqlPanel
+				.setLayout(new BoxLayout(sqlPanel, BoxLayout.LINE_AXIS));
+		sqlPanel
+				.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		add(sqlPanel);
 
 		makeToolBarButton("Select", "Select", "select", "select", algebraPanel);
 		makeToolBarButton("Project", "Project", "project", "project",
@@ -43,10 +50,14 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 
 		algebraPanel.add(Box.createHorizontalStrut(50));
 
+		makeToolBarButton("Convert", "Convert", "convert", "convert",
+				defaultPanel);
+		defaultPanel.add(Box.createHorizontalStrut(50));
+		
 		makeToolBarButton("Validate", "Validate", "validate", "validate",
-				defaultPanel);
+				sqlPanel);
 		makeToolBarButton("Execute", "Execute", "execute", "execute",
-				defaultPanel);
+				sqlPanel);
 
 	}
 	
@@ -98,11 +109,18 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 		} else if ("Execute".equals(e.getActionCommand())) {
 			System.out.println("Pressed Execute");
 			this.actionListener.actionPerformed(e);
+		} else if ("Convert".equals(e.getActionCommand())) {
+			System.out.println("Pressed Convert");
+			this.actionListener.actionPerformed(e);
 		}
 	}
 
 	public void setVisibilityOfAlgebraPanel(boolean flag) {
 		algebraPanel.setVisible(flag);
+	}
+	
+	public void setVisibilityOfSqlPanel(boolean flag) {
+		sqlPanel.setVisible(flag);
 	}
 	
 	public void setVisibilityOfDefaultPanel(boolean flag) {

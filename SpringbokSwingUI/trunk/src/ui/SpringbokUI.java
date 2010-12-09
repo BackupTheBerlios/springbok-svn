@@ -37,6 +37,7 @@ import views.ResultPanel;
 import controllers.AlgebraToSqlTranslator;
 import controllers.AlgebraValidator;
 import controllers.DAOController;
+import controllers.SqlToAlgebraTranslator;
 import event.IModelUpdateListener;
 import exception.CoreException;
 
@@ -471,50 +472,86 @@ public class SpringbokUI extends JFrame implements ActionListener {
 						}
 					} else if ("Convert".equals(e.getActionCommand())) {
 						if (uiModel.getUiMode() == UIMode.SQL) {
-							//handleSql();
+							convertSqlToAlgebra();
 						} else if(uiModel.getUiMode() == UIMode.ALGEBRA) {
-							AlgebraToSqlTranslator translator = new AlgebraToSqlTranslator();
-							String text = editorPane.getSelectedText();
-							System.out.println(text);
-							// block for empty strings
-							if (text == null || text.length() == 0)
-								return;
-														
-							// if multiple queries are there by separating
-							// ";"
-							// then take one by one
-							String[] queries = text.split(";");
-							StringBuffer stringBuffer = new StringBuffer();
-							for (String query : queries) {
-												
-								if (query != null)
-									query = query.trim();
-
-								if (query == null || query.length() == 0)
-									continue;
-
-								String validationResult = AlgebraValidator.validate(query);
-								if(validationResult != null) {
-									textPane.setText(validationResult);
-									return;
-								}
-								
-								// look for <- to get table name 
-								int index = query.indexOf("\u2190");
-								String tableName = null;
-								if(index != -1) {
-									tableName = query.substring(0, index);
-									query = query.substring(index + 1);
-								}
-																	
-								String output = translator.translate(query);
-								stringBuffer.append(output);
-								stringBuffer.append("\n");						
-							}
-							 
-							textPane.setText(stringBuffer.toString());
+							convertAlgebraToSql();
 						}
 					}
+				}
+
+				private void convertSqlToAlgebra() {
+					SqlToAlgebraTranslator translator = new SqlToAlgebraTranslator();
+					String text = editorPane.getSelectedText();
+					System.out.println(text);
+					// block for empty strings
+					if (text == null || text.length() == 0)
+						return;
+					
+					// if multiple queries are there by separating
+					// ";"
+					// then take one by one
+					String[] queries = text.split(";");
+					StringBuffer stringBuffer = new StringBuffer();
+					for (String query : queries) {
+						if (query != null)
+							query = query.trim();
+
+						if (query == null || query.length() == 0)
+							continue;
+
+//						String validationResult = AlgebraValidator.validate(query);
+//						if(validationResult != null) {
+//							textPane.setText(validationResult);
+//							return;
+//						}
+															
+						String output = translator.translate(query);
+						stringBuffer.append(output);
+						stringBuffer.append("\n");		
+					}
+					
+					textPane.setText(stringBuffer.toString());
+				}
+
+				private void convertAlgebraToSql() {
+					AlgebraToSqlTranslator translator = new AlgebraToSqlTranslator();
+					String text = editorPane.getSelectedText();
+					System.out.println(text);
+					// block for empty strings
+					if (text == null || text.length() == 0)
+						return;
+												
+					// if multiple queries are there by separating
+					// ";"
+					// then take one by one
+					String[] queries = text.split(";");
+					StringBuffer stringBuffer = new StringBuffer();
+					for (String query : queries) {
+										
+						if (query != null)
+							query = query.trim();
+
+						if (query == null || query.length() == 0)
+							continue;
+
+						String validationResult = AlgebraValidator.validate(query);
+						if(validationResult != null) {
+							textPane.setText(validationResult);
+							return;
+						}
+						
+						// look for <- to get table name 
+						int index = query.indexOf("\u2190");						
+						if(index != -1) {							
+							query = query.substring(index + 1);
+						}
+															
+						String output = translator.translate(query);
+						stringBuffer.append(output);
+						stringBuffer.append("\n");						
+					}
+					 
+					textPane.setText(stringBuffer.toString());
 				}
 			};
 		}

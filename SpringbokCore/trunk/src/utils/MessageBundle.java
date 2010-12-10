@@ -16,6 +16,10 @@ public class MessageBundle {
 	public static final String UNION_COLUMN_UNBALANCED = "UNION_COLUMN_UNBALANCED";
 	public static final String INTERSECT_COLUMN_UNBALANCED = "INTERSECT_COLUMN_UNBALANCED";
 	public static final String DIFFERENCE_COLUMN_UNBALANCED = "DIFFERENCE_COLUMN_UNBALANCED";
+	
+	public static final String PRODUCT_TABLES_UNBALANCED = "PRODUCT_TABLES_UNBALANCED";
+	public static final String PRODUCT_TABLES_LEFT_TABEL_ERROR = "PRODUCT_TABLES_LEFT_TABEL_ERROR";
+	public static final String PRODUCT_TABLES_RIGHT_TABEL_ERROR = "PRODUCT_TABLES_RIGHT_TABEL_ERROR";
 
 	private static HashMap<String, String> content = new HashMap<String, String>();
 
@@ -30,6 +34,10 @@ public class MessageBundle {
 		content.put(UNION_COLUMN_UNBALANCED, "You have an error in your Query syntax; Union operation columns have to be union compatible. E.g column1 "+ AlgebraConstants.UNION +" column2");
 		content.put(INTERSECT_COLUMN_UNBALANCED, "You have an error in your Query syntax; Intersection operation columns have to be union compatible. E.g column1 "+ AlgebraConstants.INTERSECTION +" column2");
 		content.put(DIFFERENCE_COLUMN_UNBALANCED, "You have an error in your Query syntax; Difference operation columns have to be union compatible. E.g column1 "+ AlgebraConstants.DIFFERENCE +" column2");
+		
+		content.put(PRODUCT_TABLES_UNBALANCED, "You have an error in your Query syntax; Product operation works on two tables. E.g (tableName) "+ AlgebraConstants.PRODUCT +" (tableName)");
+		content.put(PRODUCT_TABLES_LEFT_TABEL_ERROR, "You have an error in your Query syntax; Please re-check left table name. E.g (tableName) "+ AlgebraConstants.PRODUCT +" (tableName)");
+		content.put(PRODUCT_TABLES_RIGHT_TABEL_ERROR, "You have an error in your Query syntax; Please re-check right table name. E.g (tableName) "+ AlgebraConstants.PRODUCT +" (tableName)");
 	}
 	
 	public static String getMessage(String key) {

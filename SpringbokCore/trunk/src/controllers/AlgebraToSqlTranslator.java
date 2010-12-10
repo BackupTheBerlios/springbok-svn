@@ -23,8 +23,26 @@ public class AlgebraToSqlTranslator {
 				statement = translateIntersectionStatement(variableMap, algebra);
 			else if(algebra.contains(AlgebraConstants.DIFFERENCE.toString()))
 				statement = translateDifferenceStatement(variableMap, algebra);
+			else if(algebra.contains(AlgebraConstants.PRODUCT.toString()))
+				statement = translateProductStatement(variableMap, algebra);
 		}		
 		return statement;		
+	}
+
+	private String translateProductStatement(Map<String, String> variableMap,
+			String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.PRODUCT.toString());
+		if (parts.length == 2) {
+			String varLeft = parts[0];
+			varLeft = StringUtils.normalize(varLeft);
+
+			String varRight = parts[1];
+			varRight = StringUtils.normalize(varRight);
+
+			return "select * from " + varLeft + "," + varRight;
+		}
+
+		return null;
 	}
 
 	private String translateDifferenceStatement(

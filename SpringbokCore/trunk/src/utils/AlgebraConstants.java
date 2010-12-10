@@ -10,6 +10,8 @@ public class AlgebraConstants {
 	public static final Character INTERSECTION = '\u2229';
 	public static final Character DIFFERENCE = '\u2013';
 	
+	public static final Character PRODUCT = '\u03C7';
+	
 	public static final Character MARK_BEGIN = '\u00BB';
 	public static final Character MARK_END = '\u00AB';
 }

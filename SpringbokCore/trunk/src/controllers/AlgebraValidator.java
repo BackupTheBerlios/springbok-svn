@@ -30,9 +30,43 @@ public class AlgebraValidator {
 				message = resolveIntersectionStatement(algebra);
 			else if (algebra.contains(AlgebraConstants.DIFFERENCE.toString()))
 				message = resolveDifferenceStatement(algebra);
+			else if(algebra.contains(AlgebraConstants.PRODUCT.toString()))
+				message = resolveProductStatement(algebra);
 		}
 
 		return message;
+	}
+
+	private static String resolveProductStatement(String algebra) {
+		
+		int index = algebra.indexOf(AlgebraConstants.ASSIGN); 
+		if(index > 0) {
+			// remove assign part
+			algebra = algebra.substring(index + 1);
+		}
+			
+		
+		
+		String[] parts = algebra.split(AlgebraConstants.PRODUCT.toString());
+		if (parts.length != 2) {
+			return MessageBundle
+					.getMessage(MessageBundle.PRODUCT_TABLES_UNBALANCED);
+		} else if(parts.length == 2){
+			String varLeft = parts[0];
+			varLeft = StringUtils.normalize(varLeft);
+
+			if(!varLeft.matches("\\p{Graph}*"))
+				return MessageBundle
+				.getMessage(MessageBundle.PRODUCT_TABLES_LEFT_TABEL_ERROR);
+			
+			String varRight = parts[1];
+			varRight = StringUtils.normalize(varRight);
+			if(!varRight.matches("\\p{Graph}*"))
+				return MessageBundle
+				.getMessage(MessageBundle.PRODUCT_TABLES_RIGHT_TABEL_ERROR);
+
+		}
+		return null;
 	}
 
 	private static String resolveUnionStatement(String algebra) {

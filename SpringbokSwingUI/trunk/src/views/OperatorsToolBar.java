@@ -49,6 +49,7 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 		makeToolBarButton("Union", "Union", "union", "union", algebraPanel);
 		makeToolBarButton("Intersection", "Intersection", "intersection", "intersection", algebraPanel);
 		makeToolBarButton("Difference", "Difference", "difference", "difference", algebraPanel);
+		makeToolBarButton("Product", "Product", "product", "product", algebraPanel);
 		makeToolBarButton("Assign", "Assign", "assign", "assign", algebraPanel);
 
 		algebraPanel.add(Box.createHorizontalStrut(50));
@@ -111,6 +112,9 @@ public class OperatorsToolBar extends JToolBar implements ActionListener {
 			this.actionListener.actionPerformed(e);
 		} else if ("Difference".equals(e.getActionCommand())) {
 			System.out.println("Pressed Difference");
+			this.actionListener.actionPerformed(e);
+		} else if ("Product".equals(e.getActionCommand())) {
+			System.out.println("Pressed Product");
 			this.actionListener.actionPerformed(e);
 		} else if ("Assign".equals(e.getActionCommand())) {
 			System.out.println("Pressed Assign");

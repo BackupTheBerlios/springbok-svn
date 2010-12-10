@@ -525,6 +525,17 @@ public class SpringbokUI extends JFrame implements ActionListener {
 							buffer.insert(i, AlgebraConstants.DIFFERENCE);
 						}
 						editorPane.setText(buffer.toString());						
+					} else if ("Product".equals(e.getActionCommand())) {
+						System.out.println("Pressed Product");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append(AlgebraConstants.PRODUCT);
+						} else {
+							buffer.insert(i, AlgebraConstants.PRODUCT);
+						}
+						editorPane.setText(buffer.toString());						
 					} else if ("Assign".equals(e.getActionCommand())) {
 						System.out.println("Pressed Assign");
 						StringBuffer buffer = new StringBuffer(editorPane

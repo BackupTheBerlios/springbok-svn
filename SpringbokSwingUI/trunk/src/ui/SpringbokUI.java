@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
@@ -14,6 +15,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -30,6 +32,7 @@ import model.Result;
 import model.UIMode;
 import model.UIModel;
 import utils.AlgebraConstants;
+import utils.FileUtils;
 import views.ClosableTabbedPane;
 import views.NewAlias;
 import views.OperatorsToolBar;
@@ -48,6 +51,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 	private JSplitPane splitPane;
 
 	private JMenu menuMode;
+	private JMenu menuFile;
 
 	private JMenuItem menuItemRelation;
 	private JRadioButtonMenuItem menuItemAlgebraMode;
@@ -160,6 +164,28 @@ public class SpringbokUI extends JFrame implements ActionListener {
 	protected JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
 
+		menuFile = new JMenu("File");
+		menuFile.setMnemonic(KeyEvent.VK_F);
+		menuBar.add(menuFile);
+		
+		// import a text file
+		JMenuItem menuItemImport = new JMenuItem("Import");
+		menuItemImport.setMnemonic(KeyEvent.VK_I);
+		menuItemImport.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I,
+				ActionEvent.ALT_MASK));
+		menuItemImport.setActionCommand("import");
+		menuItemImport.addActionListener(this);
+		menuFile.add(menuItemImport);
+		
+		// save editor pane
+		JMenuItem menuItemSave = new JMenuItem("Save");
+		menuItemSave.setMnemonic(KeyEvent.VK_S);
+		menuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+				ActionEvent.CTRL_MASK));
+		menuItemSave.setActionCommand("save");
+		menuItemSave.addActionListener(this);
+		menuFile.add(menuItemSave);
+		
 		menuMode = new JMenu("Mode");
 		menuMode.setMnemonic(KeyEvent.VK_M);
 		menuBar.add(menuMode);
@@ -205,7 +231,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 				ActionEvent.ALT_MASK));
 		menuItemRelation.setActionCommand("relation");
 		menuItemRelation.addActionListener(this);
-		menuNew.add(menuItemRelation);
+		//menuNew.add(menuItemRelation);
 
 		JMenu menuView = new JMenu("View");
 		menuView.setMnemonic(KeyEvent.VK_V);
@@ -318,11 +344,33 @@ public class SpringbokUI extends JFrame implements ActionListener {
 			Font oldFont = editorPane.getFont();
 			Font newFont = new Font(oldFont.getName(), oldFont.getStyle(), oldFont.getSize()-1);
 			editorPane.setFont(newFont);
+		} else if("import".equals(e.getActionCommand())){
+			JFileChooser dialog = new JFileChooser(".");
+			dialog.setMultiSelectionEnabled(false);
+			dialog.setDialogType(JFileChooser.OPEN_DIALOG);
+			dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);			
+			dialog.showOpenDialog(this);
+			File file = dialog.getSelectedFile();
+			if(file != null) {
+				String content = FileUtils.readFile(file);
+				if(content != null)
+					editorPane.setText(content);
+			}						
+		} else if("save".equals(e.getActionCommand())){
+			JFileChooser dialog = new JFileChooser(".");
+			dialog.setMultiSelectionEnabled(false);
+			dialog.setDialogType(JFileChooser.SAVE_DIALOG);
+			dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			dialog.showSaveDialog(this);
+			File file = dialog.getSelectedFile();
+			FileUtils.createFile(file, editorPane.getText());
+			System.out.println(file);
 		}
 	}
 
 	private void updateMenuItems() {
 		// disable some menus or menu items when Alias is not set
+		menuFile.setEnabled(uiModel.getAlias() != null);
 		menuMode.setEnabled(uiModel.getAlias() != null);
 		menuItemRelation.setEnabled(uiModel.getAlias() != null);
 

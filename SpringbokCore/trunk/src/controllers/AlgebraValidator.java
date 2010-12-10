@@ -1,7 +1,6 @@
 package controllers;
 
 import java.text.MessageFormat;
-import java.util.Map;
 
 import utils.AlgebraConstants;
 import utils.MessageBundle;
@@ -17,17 +16,51 @@ public class AlgebraValidator {
 
 	public static String validate(String algebra) {
 		String message = null;
-		
-		if(StringUtils.isNotEmpty(algebra)) {
+
+		if (StringUtils.isNotEmpty(algebra)) {
 			algebra = StringUtils.normalize(algebra);
 			char ch = algebra.charAt(0);
-			if(ch == AlgebraConstants.SELECT)
+			if (ch == AlgebraConstants.SELECT)
 				message = resolveSelectStatement(algebra);
-			else if(ch == AlgebraConstants.PROJECT)
+			else if (ch == AlgebraConstants.PROJECT)
 				message = resolveProjectStatement(algebra);
+			else if (algebra.contains(AlgebraConstants.UNION.toString()))
+				message = resolveUnionStatement(algebra);
+			else if (algebra.contains(AlgebraConstants.INTERSECTION.toString()))
+				message = resolveIntersectionStatement(algebra);
+			else if (algebra.contains(AlgebraConstants.DIFFERENCE.toString()))
+				message = resolveDifferenceStatement(algebra);
 		}
-		
+
 		return message;
+	}
+
+	private static String resolveUnionStatement(String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.UNION.toString());
+		if (parts.length != 2) {
+			return MessageBundle
+					.getMessage(MessageBundle.UNION_COLUMN_UNBALANCED);
+		}
+		return null;
+	}
+
+	private static String resolveIntersectionStatement(String algebra) {
+		String[] parts = algebra
+				.split(AlgebraConstants.INTERSECTION.toString());
+		if (parts.length != 2) {
+			return MessageBundle
+					.getMessage(MessageBundle.INTERSECT_COLUMN_UNBALANCED);
+		}
+		return null;
+	}
+
+	private static String resolveDifferenceStatement(String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.DIFFERENCE.toString());
+		if (parts.length != 2) {
+			return MessageBundle
+					.getMessage(MessageBundle.DIFFERENCE_COLUMN_UNBALANCED);
+		}
+		return null;
 	}
 
 	/**
@@ -36,115 +69,133 @@ public class AlgebraValidator {
 	 */
 	private static String resolveProjectStatement(String algebra) {
 		// should have at lease 'project col (tableName)'
-		if(algebra.length()<2)
-			return MessageBundle.getMessage(MessageBundle.PROJECT_MISSING_PROJECT_COLUMN);
-		
-		int indexOfOpenBrace = algebra.indexOf('('); 
-		if(indexOfOpenBrace < 1)
-			return MessageBundle.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
-		
-		int indexOfCloseBrace = algebra.indexOf(')'); 
-		if(indexOfCloseBrace < 0)
-			return MessageBundle.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
-		
-		if(indexOfCloseBrace < indexOfOpenBrace)
-			return MessageBundle.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
-		
-		String tableName = algebra.substring(indexOfOpenBrace+1, indexOfCloseBrace);
+		if (algebra.length() < 2)
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_MISSING_PROJECT_COLUMN);
+
+		int indexOfOpenBrace = algebra.indexOf('(');
+		if (indexOfOpenBrace < 1)
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
+
+		int indexOfCloseBrace = algebra.indexOf(')');
+		if (indexOfCloseBrace < 0)
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
+
+		if (indexOfCloseBrace < indexOfOpenBrace)
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_MISSING_TABLE_BRACES);
+
+		String tableName = algebra.substring(indexOfOpenBrace + 1,
+				indexOfCloseBrace);
 		tableName = StringUtils.normalize(tableName);
-		
-		if(StringUtils.isEmpty(tableName))
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
-		
+
+		if (StringUtils.isEmpty(tableName))
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
+
 		/*
 		 * select projectClause (tableName);
 		 */
 		String projectClause = algebra.substring(1, indexOfOpenBrace);
 		projectClause = StringUtils.normalize(projectClause);
-								
-		if(StringUtils.isNotEmpty(projectClause))			
-			return resolveProjectClause(projectClause);		
-		else		
-			return MessageBundle.getMessage(MessageBundle.PROJECT_MISSING_PROJECT_COLUMN); 
+
+		if (StringUtils.isNotEmpty(projectClause))
+			return resolveProjectClause(projectClause);
+		else
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_MISSING_PROJECT_COLUMN);
 	}
 
 	private static String resolveProjectClause(String projectClause) {
-		// projectClause can not be ended with a ','		
-		if(projectClause.lastIndexOf(',') == projectClause.length() -1)
-			return MessageBundle.getMessage(MessageBundle.PROJECT_COLUMN_INVALID_END);
+		// projectClause can not be ended with a ','
+		if (projectClause.lastIndexOf(',') == projectClause.length() - 1)
+			return MessageBundle
+					.getMessage(MessageBundle.PROJECT_COLUMN_INVALID_END);
 		return null;
 	}
 
 	private static String resolveSelectStatement(String algebra) {
 		// should have at lease 'select (tableName)'
-		if(algebra.length()<2)
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
-		
-		int indexOfOpenBrace = algebra.indexOf('('); 
-		if(indexOfOpenBrace < 1)
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
-		
-		int indexOfCloseBrace = algebra.indexOf(')'); 
-		if(indexOfCloseBrace < 0)
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
-		
-		if(indexOfCloseBrace < indexOfOpenBrace)
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
-		
-		String tableName = algebra.substring(indexOfOpenBrace+1, indexOfCloseBrace);
+		if (algebra.length() < 2)
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
+
+		int indexOfOpenBrace = algebra.indexOf('(');
+		if (indexOfOpenBrace < 1)
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
+
+		int indexOfCloseBrace = algebra.indexOf(')');
+		if (indexOfCloseBrace < 0)
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
+
+		if (indexOfCloseBrace < indexOfOpenBrace)
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_BRACES);
+
+		String tableName = algebra.substring(indexOfOpenBrace + 1,
+				indexOfCloseBrace);
 		tableName = StringUtils.normalize(tableName);
-		
-		if(StringUtils.isEmpty(tableName))
-			return MessageBundle.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
-		
+
+		if (StringUtils.isEmpty(tableName))
+			return MessageBundle
+					.getMessage(MessageBundle.SELECT_MISSING_TABLE_NAME);
+
 		/*
 		 * select whereClause (tableName);
 		 */
 		String whereClause = algebra.substring(1, indexOfOpenBrace);
 		whereClause = StringUtils.normalize(whereClause);
-		
-		if(StringUtils.isNotEmpty(whereClause))
+
+		if (StringUtils.isNotEmpty(whereClause))
 			return resolveWhereClause(whereClause);
-		
+
 		return null;
 	}
 
 	private static String resolveWhereClause(String whereClause) {
-		//Vector<String> conditions = new Vector<String>();
+		// Vector<String> conditions = new Vector<String>();
 		String operator = "and";
 		int index = whereClause.indexOf(operator);
-		if(index < 0) {
+		if (index < 0) {
 			operator = "or";
 			index = whereClause.indexOf(operator);
 		}
-		
+
 		// no and | or
-		if(index < 0) {
+		if (index < 0) {
 			String condition = StringUtils.normalize(whereClause);
 			return resolveCondition(condition);
-		}
-		else {
+		} else {
 			String condition = whereClause.substring(0, index);
 			condition = StringUtils.normalize(condition);
 			String message = resolveCondition(condition);
 			// if first condition is ok then test remaining
-			if(message == null)
-				return resolveWhereClause(whereClause.substring(index + operator.length()));
+			if (message == null)
+				return resolveWhereClause(whereClause.substring(index
+						+ operator.length()));
 			else
 				return message;
 		}
-	//return null;
+		// return null;
 	}
 
 	private static String resolveCondition(String condition) {
-		if(!condition.contains("="))
-			if(!condition.contains("!="))
-				if(!condition.contains("<"))
-					if(!condition.contains("<="))
-						if(!condition.contains(">"))
-							if(!condition.contains(">="))
-								return MessageFormat.format(MessageBundle.getMessage(MessageBundle.SELECT_ERROR_WHERE_CONDITION), condition);
-				
+		if (!condition.contains("="))
+			if (!condition.contains("!="))
+				if (!condition.contains("<"))
+					if (!condition.contains("<="))
+						if (!condition.contains(">"))
+							if (!condition.contains(">="))
+								return MessageFormat
+										.format(
+												MessageBundle
+														.getMessage(MessageBundle.SELECT_ERROR_WHERE_CONDITION),
+												condition);
+
 		return null;
 	}
 }

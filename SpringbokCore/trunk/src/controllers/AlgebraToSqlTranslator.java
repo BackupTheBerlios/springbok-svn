@@ -17,8 +17,74 @@ public class AlgebraToSqlTranslator {
 				statement = translateSelectStatement(variableMap, algebra);
 			else if(ch == AlgebraConstants.PROJECT)
 				statement = translateProjectStatement(variableMap, algebra);
+			else if(algebra.contains(AlgebraConstants.UNION.toString()))
+				statement = translateUnionStatement(variableMap, algebra);
+			else if(algebra.contains(AlgebraConstants.INTERSECTION.toString()))
+				statement = translateIntersectionStatement(variableMap, algebra);
+			else if(algebra.contains(AlgebraConstants.DIFFERENCE.toString()))
+				statement = translateDifferenceStatement(variableMap, algebra);
 		}		
 		return statement;		
+	}
+
+	private String translateDifferenceStatement(
+			Map<String, String> variableMap, String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.DIFFERENCE.toString());
+		if(parts.length == 2) {
+			String varLeft = parts[0];
+			varLeft = StringUtils.normalize(varLeft);
+			String left = variableMap.get(varLeft);
+			left = StringUtils.normalize(left);
+			
+			String varRight = parts[1];
+			varRight = StringUtils.normalize(varRight);
+			String right = variableMap.get(varRight);
+			right = StringUtils.normalize(right);
+			
+			return left + " except " + right;
+		}
+		
+		return null;
+	}
+
+	private String translateIntersectionStatement(
+			Map<String, String> variableMap, String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.INTERSECTION.toString());
+		if(parts.length == 2) {
+			String varLeft = parts[0];
+			varLeft = StringUtils.normalize(varLeft);
+			String left = variableMap.get(varLeft);
+			left = StringUtils.normalize(left);
+			
+			String varRight = parts[1];
+			varRight = StringUtils.normalize(varRight);
+			String right = variableMap.get(varRight);
+			right = StringUtils.normalize(right);
+			
+			return left + " intersect " + right;
+		}
+		
+		return null;
+	}
+
+	private String translateUnionStatement(Map<String, String> variableMap,
+			String algebra) {
+		String[] parts = algebra.split(AlgebraConstants.UNION.toString());
+		if(parts.length == 2) {
+			String varLeft = parts[0];
+			varLeft = StringUtils.normalize(varLeft);
+			String left = variableMap.get(varLeft);
+			left = StringUtils.normalize(left);
+			
+			String varRight = parts[1];
+			varRight = StringUtils.normalize(varRight);
+			String right = variableMap.get(varRight);
+			right = StringUtils.normalize(right);
+			
+			return left + " union " + right;
+		}
+		
+		return null;
 	}
 
 	private String translateProjectStatement(Map<String, String> variableMap, String algebra) {

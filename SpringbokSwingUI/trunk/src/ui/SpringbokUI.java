@@ -10,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -33,6 +35,7 @@ import model.UIMode;
 import model.UIModel;
 import utils.AlgebraConstants;
 import utils.FileUtils;
+import utils.StringUtils;
 import views.ClosableTabbedPane;
 import views.NewAlias;
 import views.OperatorsToolBar;
@@ -576,6 +579,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 					// then take one by one
 					String[] queries = text.split(";");
 					StringBuffer stringBuffer = new StringBuffer();
+					Map<String, String> variableMap = new HashMap<String, String>();
 					for (String query : queries) {
 										
 						if (query != null)
@@ -591,12 +595,19 @@ public class SpringbokUI extends JFrame implements ActionListener {
 						}
 						
 						// look for <- to get table name 
-						int index = query.indexOf("\u2190");						
-						if(index != -1) {							
+						int index = query.indexOf(AlgebraConstants.ASSIGN);
+						String tableName = null;
+						if(index != -1) {
+							tableName = query.substring(0, index);
 							query = query.substring(index + 1);
 						}
 															
-						String output = translator.translate(query);
+						String output = translator.translate(variableMap, query);
+						// file the variable map
+						if(StringUtils.isNotEmpty(tableName)) {
+							tableName = StringUtils.normalize(tableName);
+							variableMap.put(tableName, output);
+						}
 						stringBuffer.append(output);
 						stringBuffer.append("\n");						
 					}
@@ -633,6 +644,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 			// ";"
 			// then take one by one
 			String[] queries = text.split(";");
+			Map<String, String> variableMap = new HashMap<String, String>();
 			for (String query : queries) {
 								
 				if (query != null)
@@ -648,7 +660,7 @@ public class SpringbokUI extends JFrame implements ActionListener {
 				}
 				
 				// look for <- to get table name 
-				int index = query.indexOf("\u2190");
+				int index = query.indexOf(AlgebraConstants.ASSIGN);
 				String tableName = null;
 				if(index != -1) {
 					tableName = query.substring(0, index);
@@ -656,8 +668,13 @@ public class SpringbokUI extends JFrame implements ActionListener {
 				}
 				
 				
-				String output = translator.translate(query);
+				String output = translator.translate(variableMap, query);
 				System.out.println(output);
+				// file the variable map
+				if(StringUtils.isNotEmpty(tableName)) {
+					tableName = StringUtils.normalize(tableName);
+					variableMap.put(tableName, output);
+				}
 				
 				long t1 = System.currentTimeMillis();
 				Result result = controller

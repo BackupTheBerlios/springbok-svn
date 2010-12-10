@@ -363,8 +363,10 @@ public class SpringbokUI extends JFrame implements ActionListener {
 			dialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			dialog.showSaveDialog(this);
 			File file = dialog.getSelectedFile();
-			FileUtils.createFile(file, editorPane.getText());
-			System.out.println(file);
+			if (file != null) {
+				FileUtils.createFile(file, editorPane.getText());
+				System.out.println(file);
+			}
 		}
 	}
 

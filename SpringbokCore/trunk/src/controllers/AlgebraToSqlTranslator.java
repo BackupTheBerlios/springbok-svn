@@ -1,25 +1,27 @@
 package controllers;
 
+import java.util.Map;
+
 import utils.AlgebraConstants;
 import utils.StringUtils;
 
 public class AlgebraToSqlTranslator {
 
-	public String translate(String algebra) {		
+	public String translate(Map<String, String> variableMap, String algebra) {		
 		String statement = null;
 		
 		if(StringUtils.isNotEmpty(algebra)) {
 			algebra = StringUtils.normalize(algebra);
 			char ch = algebra.charAt(0);
 			if(ch == AlgebraConstants.SELECT)
-				statement = translateSelectStatement(algebra);
+				statement = translateSelectStatement(variableMap, algebra);
 			else if(ch == AlgebraConstants.PROJECT)
-				statement = translateProjectStatement(algebra);
+				statement = translateProjectStatement(variableMap, algebra);
 		}		
 		return statement;		
 	}
 
-	private String translateProjectStatement(String algebra) {
+	private String translateProjectStatement(Map<String, String> variableMap, String algebra) {
 		int indexOfOpenBrace = algebra.indexOf('(');		
 		int indexOfCloseBrace = algebra.indexOf(')');
 		
@@ -32,12 +34,15 @@ public class AlgebraToSqlTranslator {
 		String projectClause = algebra.substring(1, indexOfOpenBrace);
 		projectClause = StringUtils.normalize(projectClause);
 		
-		char ch = tableName.charAt(0);
-		if(ch == AlgebraConstants.SELECT) {
-			// assume tableName => select (tableName)
-			String statement = translateSelectStatement(tableName);
+
+		// assume tableName => select (tableName)
+		String value = variableMap.get(tableName);
+		if(StringUtils.isNotEmpty(value)) {
+			//String statement = translateSelectStatement(variableMap, tableName);
 			if(StringUtils.isNotEmpty(projectClause))
-				return statement.replaceFirst("\\*", projectClause);
+				return value.replaceFirst("\\*", projectClause); // "select " + projectClause + " (" + value + ")";
+			else
+				return value;
 		} else {
 			// assume as a table
 			String statement = "select * from " + tableName;
@@ -47,10 +52,10 @@ public class AlgebraToSqlTranslator {
 			//TODO: if a assigned variable
 		}
 		
-		return null;
+		//return null;
 	}
 
-	private String translateSelectStatement(String algebra) {
+	private String translateSelectStatement(Map<String, String> variableMap, String algebra) {
 				
 		int indexOfOpenBrace = algebra.indexOf('(');		
 		int indexOfCloseBrace = algebra.indexOf(')');

@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
@@ -491,6 +490,39 @@ public class SpringbokUI extends JFrame implements ActionListener {
 							buffer.append(AlgebraConstants.PROJECT);
 						} else {
 							buffer.insert(i, AlgebraConstants.PROJECT);
+						}
+						editorPane.setText(buffer.toString());						
+					} else if ("Union".equals(e.getActionCommand())) {
+						System.out.println("Pressed Union");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append(AlgebraConstants.UNION);
+						} else {
+							buffer.insert(i, AlgebraConstants.UNION);
+						}
+						editorPane.setText(buffer.toString());						
+					} else if ("Intersection".equals(e.getActionCommand())) {
+						System.out.println("Pressed Intersection");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append(AlgebraConstants.INTERSECTION);
+						} else {
+							buffer.insert(i, AlgebraConstants.INTERSECTION);
+						}
+						editorPane.setText(buffer.toString());						
+					} else if ("Difference".equals(e.getActionCommand())) {
+						System.out.println("Pressed Difference");
+						StringBuffer buffer = new StringBuffer(editorPane
+								.getText());
+						int i = editorPane.getCaretPosition();
+						if (i == buffer.length()) {
+							buffer.append(AlgebraConstants.DIFFERENCE);
+						} else {
+							buffer.insert(i, AlgebraConstants.DIFFERENCE);
 						}
 						editorPane.setText(buffer.toString());						
 					} else if ("Assign".equals(e.getActionCommand())) {
